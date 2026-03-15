@@ -1,9 +1,11 @@
 from app.database.transcriptions import insert_transcription, get_transcriptions
 from flask import Blueprint, request, jsonify
-import uuid, os, tempfile
+import os
 from dataclasses import asdict
 from app.services.whisper_service import transcribe_audio
+from app.database.transcriptions import get_unique_filename
 from app.utils.logger import get_logger
+from app.utils.file import save_temporary_file, delete_temporary_file
 
 logger = get_logger(__name__)
 
@@ -20,13 +22,10 @@ def transcribe():
 
     file = request.files["file"]
     original_filename = os.path.basename(file.filename)
-    unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
-    logger.info(f"Processing file: {original_filename} -> {unique_filename}")
+    unique_filename = get_unique_filename(original_filename)
 
     # Create temp file path
-    tmp_dir = tempfile.gettempdir()
-    tmp_path = os.path.join(tmp_dir, unique_filename)
-    file.save(tmp_path)
+    tmp_path = save_temporary_file(file, unique_filename)
 
     try:
         # Transcribe using Whisper
@@ -41,9 +40,11 @@ def transcribe():
 
     finally:
         # Ensure the temporary file is removed
-        if os.path.exists(tmp_path):
-            os.remove(tmp_path)
+        is_deleted = delete_temporary_file(tmp_path)
+        if is_deleted:
             logger.info(f"Temporary file removed: {tmp_path}")
+        else:
+            logger.warning(f"Temporary file not found for deletion: {tmp_path}")
 
     return jsonify({"filename": unique_filename, "transcription": text})
 

@@ -6,6 +6,15 @@ from app.model.transcriptions import Transcription
 
 
 def get_unique_filename(original_filename: str) -> str:
+    """
+    Generates a unique filename for an audio file based on existing records.
+
+    Args:
+        original_filename (str): The original filename.
+
+    Returns:
+        str: A unique filename with uuid4 prefix.
+    """
     try:
         with get_connection() as conn:
             cursor = conn.cursor()
@@ -26,6 +35,13 @@ def get_unique_filename(original_filename: str) -> str:
 
 
 def insert_transcription(filename: str, transcription: str) -> None:
+    """
+    Inserts a transcription record into the database.
+
+    Args:
+        filename (str): The unique filename for the audio file.
+        transcription (str): The transcription text.
+    """
     try:
         with get_connection() as conn:
             conn.execute(
@@ -41,6 +57,12 @@ def insert_transcription(filename: str, transcription: str) -> None:
 
 
 def get_transcriptions() -> List[Transcription]:
+    """
+    Fetches all transcription records from the database.
+
+    Returns:
+        List[Transcription]: A list of transcription records.
+    """
     try:
         with get_connection() as conn:
             rows = conn.execute(
@@ -58,6 +80,15 @@ def get_transcriptions() -> List[Transcription]:
 
 
 def search_transcriptions(query: str) -> List[Transcription]:
+    """
+    Searches for transcription records based on audio filename (case-insensitive, partial match).
+
+    Args:
+        query (str): The search query for the audio filename.
+
+    Returns:
+        List[Transcription]: A list of transcription records matching the search query.
+    """
     try:
         search_term = f"%{query}%"
 
@@ -67,10 +98,9 @@ def search_transcriptions(query: str) -> List[Transcription]:
                 SELECT id, filename, transcription, created_at
                 FROM transcriptions
                 WHERE filename LIKE ?
-                OR transcription LIKE ?
                 ORDER BY created_at DESC
                 """,
-                (search_term, search_term),
+                (search_term,),
             ).fetchall()
 
         return [Transcription(*row) for row in rows]
