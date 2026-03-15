@@ -65,13 +65,11 @@ def get_transcriptions() -> List[Transcription]:
     """
     try:
         with get_connection() as conn:
-            rows = conn.execute(
-                """
+            rows = conn.execute("""
                 SELECT id, filename, transcription, created_at
                 FROM transcriptions
                 ORDER BY created_at DESC
-                """
-            ).fetchall()
+                """).fetchall()
 
         return [Transcription(*row) for row in rows]
     except Exception as e:

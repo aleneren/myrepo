@@ -7,8 +7,7 @@ def init_db() -> None:
     """
     try:
         with get_connection() as conn:
-            conn.executescript(
-                """
+            conn.executescript("""
                 CREATE TABLE IF NOT EXISTS transcriptions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     filename TEXT NOT NULL UNIQUE,
@@ -18,8 +17,7 @@ def init_db() -> None:
 
                 CREATE INDEX IF NOT EXISTS idx_transcription_filename
                 ON transcriptions(filename);
-                """
-            )
+                """)
     except Exception as e:
         print(f"Error initializing database: {e}")
         raise

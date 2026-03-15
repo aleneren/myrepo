@@ -1,5 +1,6 @@
 import sqlite3
 import os
+
 DB_PATH: str = os.getenv("DB_PATH")
 
 if not DB_PATH:
