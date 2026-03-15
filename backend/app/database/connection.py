@@ -1,8 +1,6 @@
 import sqlite3
 import os
-from typing import Optional
-
-DB_PATH: Optional[str] = os.getenv("DB_PATH")
+DB_PATH: str = os.getenv("DB_PATH")
 
 if not DB_PATH:
     raise ValueError("DB_PATH environment variable is not set.")
