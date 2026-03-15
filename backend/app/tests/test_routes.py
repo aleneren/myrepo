@@ -25,7 +25,7 @@ def client():
 
 
 # ----------------------------
-# Test: /transcribe endpoint
+# POST /transcribe endpoint
 # ----------------------------
 def test_transcribe_with_audio_file(client):
     # Patch both the whisper service and DB insert
@@ -47,7 +47,7 @@ def test_transcribe_with_audio_file(client):
 
 
 # ----------------------------
-# Test: /transcriptions endpoint
+# GET /transcriptions endpoint
 # ----------------------------
 def test_get_all_transcriptions(client):
     # Mock database response
@@ -69,7 +69,7 @@ def test_get_all_transcriptions(client):
 
 
 # ----------------------------
-# Test: /search endpoint
+# GET /search endpoint
 # ----------------------------
 def test_search_transcriptions_endpoint(client):
     # Mock database search results
