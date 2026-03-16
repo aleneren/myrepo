@@ -8,7 +8,7 @@ class Transcription:
     Dataclass representing a transcription row.
     """
 
-    id: int
+    id: str
     filename: str
     transcription: str
     created_at: datetime
