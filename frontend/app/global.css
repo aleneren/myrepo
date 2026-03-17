@@ -56,16 +56,19 @@ body {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 2rem;
-  align-items: start;
+  align-items: stretch;
+  overflow: hidden;
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   min-height: 0;
-}
+  }
 
 .upload-section {
   position: sticky;
   top: 0;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .transcriptions-section {
