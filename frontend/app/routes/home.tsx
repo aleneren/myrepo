@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import FileUpload from "../components/FileUpload";
 import SearchBar from "../components/SearchBar";
 import TranscriptionsList from "../components/TranscriptionsList";
+import { BACKEND_URL } from "../const";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const HEALTH_TIMEOUT_MS = 30000;
 const HEALTH_POLL_MS = 2000;
 
