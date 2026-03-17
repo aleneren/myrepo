@@ -56,7 +56,7 @@ def transcribe():
                     f"File {filename} ({file_size_mb:.2f} MB) exceeds max size of {MAX_FILE_SIZE_MB} MB"
                 )
                 raise ValueError(
-                    f"File {filename} ({file_size_mb:.2f} MB) exceeds max size of {MAX_FILE_SIZE_MB} MB"
+                    f"File ({file_size_mb:.2f} MB) exceeds max size of {MAX_FILE_SIZE_MB} MB"
                 )
 
             # Transcribe using Whisper
