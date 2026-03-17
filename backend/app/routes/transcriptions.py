@@ -11,6 +11,9 @@ logger = get_logger(__name__)
 
 transcriptions_bp = Blueprint("transcriptions", __name__)
 
+MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", 25))
+MAX_FILES = int(os.getenv("MAX_FILES", 5))
+
 
 @transcriptions_bp.route("/transcribe", methods=["POST"])
 def transcribe():
@@ -22,19 +25,39 @@ def transcribe():
         logger.warning("No file uploaded in request")
         return jsonify({"error": "No file uploaded"}), 400
 
+    if len(files) > MAX_FILES:
+        logger.warning(
+            f"Too many files uploaded: {len(files)}. Max allowed is {MAX_FILES}"
+        )
+        return (
+            jsonify({"error": f"Too many files uploaded. Max allowed is {MAX_FILES}"}),
+            400,
+        )
+
     results = []
     for file in files:
         audio_path = None
+        filename = os.path.basename(file.filename)
         try:
-            filename = os.path.basename(file.filename)
             if not filename:
                 logger.error("Uploaded file has no filename")
                 raise ValueError("Uploaded file must have a filename")
 
-            # Save to SQLite
+            # Save as temporary file for processing
             uuid = uuid4().hex
             audio_path = save_temporary_file(file, f"{uuid}_{filename}")
-            logger.info(f"Original audio saved to temporary path: {audio_path}")
+            file_size_mb = os.path.getsize(audio_path) / (1024 * 1024)
+            logger.info(
+                f"Original audio ({file_size_mb:.2f} MB) saved to temporary path: {audio_path}"
+            )
+
+            if file_size_mb > MAX_FILE_SIZE_MB:
+                logger.warning(
+                    f"File {filename} ({file_size_mb:.2f} MB) exceeds max size of {MAX_FILE_SIZE_MB} MB"
+                )
+                raise ValueError(
+                    f"File ({file_size_mb:.2f} MB) exceeds max size of {MAX_FILE_SIZE_MB} MB"
+                )
 
             # Transcribe using Whisper
             text = transcribe_audio(audio_path)
@@ -45,7 +68,7 @@ def transcribe():
             results.append({"id": uuid, "filename": filename, "transcription": text})
         except Exception as e:
             logger.error(f"Transcription failed: {str(e)}")
-            results.append({"error": str(e)})
+            results.append({"filename": filename, "error": str(e)})
         finally:
             is_deleted = delete_temporary_file(audio_path)
             if is_deleted:

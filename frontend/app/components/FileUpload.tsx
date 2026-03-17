@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { BACKEND_URL } from "../const";
+import { BACKEND_URL, MAX_FILES, MAX_FILE_SIZE_MB } from "../const";
 import "./FileUpload.css";
 
 const SUPPORTED_FORMATS = {
@@ -9,8 +9,6 @@ const SUPPORTED_FORMATS = {
   "audio/wav": [".wav"],
   "audio/webm": [".webm"],
 };
-
-const MAX_FILES = 5;
 
 interface FileUploadProps {
   onUploadSuccess: () => void;
@@ -22,20 +20,72 @@ interface UploadResult {
   error?: string;
 }
 
+const ProcessingView: React.FC<{ files: File[] }> = ({ files }) => (
+  <div className="upload-status">
+    <div className="spinner" />
+    <p>Transcribing your files… please wait</p>
+    <ul className="processing-file-list">
+      {files.map((f, i) => (
+        <li key={f.name}>
+          <span className="file-index">{i + 1}.</span>
+          <span className="file-name">{f.name}</span>
+          <span className="file-size">
+            {(f.size / 1024 / 1024).toFixed(1)} MB
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const IdleView: React.FC = () => (
+  <>
+    <span className="upload-icon">🎤</span>
+    <h3>Drop your audio files here</h3>
+    <p>
+      or <span className="browse-text">click to browse</span>
+    </p>
+    <p className="supported-formats">
+      MP3, MP4, MPEG, MPGA, M4A, WAV, WEBM <br />
+      Max {MAX_FILES} files with a max size of {MAX_FILE_SIZE_MB} MB each
+    </p>
+  </>
+);
+
+interface ErrorBlockProps {
+  title: string;
+  items: { key: string; label: string; detail?: string }[];
+}
+
+const ErrorBlock: React.FC<ErrorBlockProps> = ({ title, items }) => (
+  <div className="upload-error">
+    <h5>{title}</h5>
+    <ul>
+      {items.map(({ key, label, detail }) => (
+        <li key={key}>
+          <strong>{label}</strong>
+          {detail && <p>{detail}</p>}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingFiles, setProcessingFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [completedCount, setCompletedCount] = useState<number | null>(null);
+  const [completedCount, setCompletedCount] = useState<number>(0);
+  const [failedResults, setFailedResults] = useState<UploadResult[]>([]);
 
   const processFiles = async (files: File[]) => {
     setIsProcessing(true);
     setProcessingFiles(files);
     setUploadError(null);
-    setCompletedCount(null);
+    setCompletedCount(0);
+    setFailedResults([]);
 
     try {
-      // Batch upload files to backend
       const formData = new FormData();
       files.forEach((f) => formData.append("file", f));
 
@@ -50,9 +100,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
       }
 
       const results: UploadResult[] = await response.json();
-      const succeeded = results.filter((r) => r.transcription).length;
-
-      setCompletedCount(succeeded);
+      setCompletedCount(results.filter((r) => r.transcription).length);
+      setFailedResults(results.filter((r) => r.error));
       onUploadSuccess();
     } catch (err: any) {
       setUploadError(err.message);
@@ -63,7 +112,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      setCompletedCount(null);
+      setCompletedCount(0);
+      setFailedResults([]);
       if (acceptedFiles.length) processFiles(acceptedFiles.slice(0, MAX_FILES));
     },
     [onUploadSuccess],
@@ -74,6 +124,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
       onDrop,
       accept: SUPPORTED_FORMATS,
       maxFiles: MAX_FILES,
+      maxSize: MAX_FILE_SIZE_MB * 1024 * 1024,
       disabled: isProcessing,
     });
 
@@ -86,67 +137,47 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
         <input {...getInputProps()} />
         <div className="dropzone-content">
           {isProcessing ? (
-            <div className="upload-status">
-              <div className="spinner" />
-              <p>Transcribing your files… please wait</p>
-              <ul className="processing-file-list">
-                {processingFiles.map((f, i) => (
-                  <li key={f.name}>
-                    <span className="file-index">{i + 1}.</span>
-                    <span className="file-name">{f.name}</span>
-                    <span className="file-size">
-                      {(f.size / 1024 / 1024).toFixed(1)} MB
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ProcessingView files={processingFiles} />
           ) : (
-            <>
-              <span className="upload-icon">🎤</span>
-              <h3>Drop your audio files here</h3>
-              <p>
-                or <span className="browse-text">click to browse</span>
-              </p>
-              <p className="supported-formats">
-                MP3, MP4, MPEG, MPGA, M4A, WAV, WEBM &nbsp;·&nbsp; Max{" "}
-                {MAX_FILES} files
-              </p>
-            </>
+            <IdleView />
           )}
         </div>
       </div>
 
-      {completedCount !== null && !isProcessing && (
+      {completedCount > 0 && !isProcessing && (
         <p className="upload-success">
           ✅ {completedCount} file{completedCount !== 1 ? "s" : ""} transcribed
           successfully
         </p>
       )}
 
+      {failedResults.length > 0 && (
+        <ErrorBlock
+          title={`⚠️ ${failedResults.length} file${failedResults.length !== 1 ? "s" : ""} failed:`}
+          items={failedResults.map((r) => ({
+            key: r.filename,
+            label: r.filename,
+            detail: r.error,
+          }))}
+        />
+      )}
+
       {uploadError && (
-        <div className="upload-error">
-          <h5>Upload failed</h5>
-          <p>{uploadError}</p>
-        </div>
+        <ErrorBlock
+          title="Upload failed"
+          items={[{ key: "error", label: uploadError }]}
+        />
       )}
 
       {fileRejections.length > 0 && (
-        <div className="upload-error">
-          <h5>⚠️ Some files were rejected:</h5>
-          {fileRejections.map(({ file, errors }) => (
-            <div key={file.name}>
-              <p>
-                <strong>{file.name}</strong>
-              </p>
-              <ul>
-                {errors.map((e) => (
-                  <li key={e.code}>{e.message}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        <ErrorBlock
+          title="⚠️ Some files were rejected:"
+          items={fileRejections.map(({ file, errors }) => ({
+            key: file.name,
+            label: file.name,
+            detail: errors.map((e) => e.message).join(", "),
+          }))}
+        />
       )}
     </div>
   );
