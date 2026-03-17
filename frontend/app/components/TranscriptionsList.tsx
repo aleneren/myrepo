@@ -28,14 +28,14 @@ const formatDate = (s: string) => {
 };
 
 const TranscriptionsList: React.FC<TranscriptionsListProps> = ({
-  transcriptions,
+  transcriptions
 }) => {
-const [toastKey, setToastKey] = useState(0);
+  const [toastKey, setToastKey] = useState(0);
 
   const handleCopy = async (text: string, id: number) => {
     try {
       await navigator.clipboard.writeText(text);
-      setToastKey(k => k + 1); // forces a fresh mount each click
+      setToastKey((k: number) => k + 1); // forces a fresh mount each click
       setTimeout(() => setToastKey(0), 2000);
     } catch {
       /* fail silently */
@@ -90,10 +90,13 @@ const [toastKey, setToastKey] = useState(0);
         </div>
       ))}
 
-    {toastKey !== 0 && createPortal(
-      <div key={toastKey} className="copy-toast">Copied!</div>,
-      document.body
-    )}
+      {toastKey !== 0 &&
+        createPortal(
+          <div key={toastKey} className="copy-toast">
+            Copied!
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

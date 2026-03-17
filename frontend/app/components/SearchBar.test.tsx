@@ -8,9 +8,7 @@ describe("SearchBar", () => {
     const onSearch = jest.fn();
     render(<SearchBar onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      /search by audio filename.../i,
-    );
+    const input = screen.getByPlaceholderText(/search by audio filename.../i);
 
     fireEvent.change(input, { target: { value: "hello" } });
     expect(onSearch).not.toHaveBeenCalled();
