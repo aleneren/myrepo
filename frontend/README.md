@@ -10,18 +10,16 @@ React Router v7 app with TypeScript.
 
 **Requirements:** Node.js 20+
 
-### Environment (`frontend/`)
-
-Create a `.env` file in `frontend/` using [`sample.env`](sample.env) as reference:
-
-```bash
-cp sample.env .env
-```
-
 ### Setup
 
+1. Create a `.env` file in `frontend/` using [`sample.env`](sample.env) as reference:
 ```bash
-npm ci
+   cp sample.env .env
+```
+
+2. Install dependencies — **do this before running any other commands**:
+```bash
+   npm ci
 ```
 
 ### Development

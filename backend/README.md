@@ -10,34 +10,35 @@ Flask API for transcription service.
 
 **Requirements:** Python 3.10+
 
-### Environment (`backend/`)
+## Local Development
 
-Create a `.env` file in `backend/` using [`sample.env`](sample.env) as reference:
-```bash
-cp sample.env .env
-```
+**Requirements:** Python 3.10+
 
 ### Setup
 
-Create and activate a virtual environment:
-
-#### macOS / Linux
-
+1. Create a `.env` file in `backend/` using [`sample.env`](sample.env) as reference:
 ```bash
-python -m venv venv
-source venv/bin/activate
+   cp sample.env .env
 ```
 
-#### windows
+2. Create and activate a virtual environment:
+
+   #### macOS / Linux
+```bash
+   python -m venv venv
+   source venv/bin/activate
+```
+
+   #### Windows
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
 ```
 
-### Install requirements
+3. Install requirements — **do this before running any other commands**:
 ```bash
-pip install --upgrade pip
-pip install -r requirements.txt
+   pip install --upgrade pip
+   pip install -r requirements.txt
 ```
 
 ### Run Server
