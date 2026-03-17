@@ -9,8 +9,9 @@ def init_db() -> None:
         with get_connection() as conn:
             conn.executescript("""
                 CREATE TABLE IF NOT EXISTS transcriptions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    filename TEXT NOT NULL UNIQUE,
+                    i INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id TEXT NOT NULL UNIQUE,
+                    filename TEXT NOT NULL,
                     transcription TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );

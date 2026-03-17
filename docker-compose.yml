@@ -1,12 +1,32 @@
-version: "3.9"
+version: '3.9'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: transcription_backend
-    env_file:
-      - .env
     ports:
-      - "5001:5001"
-    volumes:
-      - ./data:/data
+      - "8000:8000"
+    environment:
+      DB_PATH: /app/database/db.sqlite3
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_BACKEND_URL: http://127.0.0.1:8000
+    container_name: transcription_frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+networks:
+  app-network:
+    driver: bridge

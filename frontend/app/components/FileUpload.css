@@ -1,0 +1,171 @@
+.file-upload {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dropzone {
+  border: 2px dashed #e1e5e9;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+.dropzone.drag-active {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  transform: scale(1.02);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.2);
+}
+
+.dropzone.processing {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  cursor: not-allowed;
+}
+
+.upload-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.dropzone h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.dropzone p {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.browse-text {
+  color: #3b82f6;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.supported-formats {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Transcribing state */
+.upload-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-left-color: #f59e0b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Feedback messages */
+.upload-success {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  border-radius: 8px;
+  color: #065f46;
+  font-weight: 500;
+}
+
+.upload-error {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+}
+
+.upload-error h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.upload-error p {
+  margin: 0.25rem 0;
+  font-weight: 500;
+}
+.upload-error ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+.upload-error li {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .dropzone {
+    padding: 2rem 1rem;
+  }
+}
+
+.processing-file-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+  max-width: 420px;
+}
+
+.processing-file-list li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.processing-file-list li:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.file-index {
+  color: #9ca3af;
+  min-width: 1.25rem;
+}
+
+.file-name {
+  flex: 1;
+  color: #1f2937;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.file-size {
+  color: #6b7280;
+  white-space: nowrap;
+}

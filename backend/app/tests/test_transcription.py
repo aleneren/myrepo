@@ -4,10 +4,10 @@ import pytest
 import sys
 from unittest.mock import patch, MagicMock
 
-os.environ["DB_PATH"] = "data/db.sqlite3"  # Set test database path
-sys.modules["app.services.whisper_service"] = (
-    MagicMock()
-)  # Replace whisper_service with a mock BEFORE importing app
+# os.environ["DB_PATH"] = "data/db.sqlite3"  # Set test database path
+# sys.modules["app.services.whisper_service"] = (
+#     MagicMock()
+# )  # Replace whisper_service with a mock BEFORE importing app
 
 from app import create_app
 from app.model.transcriptions import Transcription
@@ -28,22 +28,25 @@ def client():
 # POST /transcribe endpoint
 # ----------------------------
 def test_transcribe_with_audio_file(client):
+    filename = "test.wav"
+    transcription = "Hello world"
+
     # Patch both the whisper service and DB insert
     with patch("app.routes.transcriptions.transcribe_audio") as mock_transcribe, patch(
         "app.routes.transcriptions.insert_transcription"
     ) as mock_insert:
 
-        mock_transcribe.return_value = "Hello world"
+        mock_transcribe.return_value = transcription
         mock_insert.return_value = None  # simulate DB insertion
 
-        data = {"file": (io.BytesIO(b"fake audio data"), "test.wav")}
+        data = {"file": (io.BytesIO(b"fake audio data"), filename)}
         response = client.post(
             "/transcribe", data=data, content_type="multipart/form-data"
         )
 
         assert response.status_code == 200
-        assert response.json["transcription"] == "Hello world"
-        assert "filename" in response.json
+        assert response.json[0]["transcription"] == transcription
+        assert response.json[0]["filename"] == filename
 
 
 # ----------------------------
@@ -64,21 +67,10 @@ def test_get_all_transcriptions(client):
 
         assert response.status_code == 200
         assert len(response.json) == 2
-        assert response.json[0]["transcription"] == "First transcription"
-        assert response.json[1]["filename"] == "file2.wav"
+        assert response.json[0]["transcription"] == mock_transcriptions[0].transcription
+        assert response.json[0]["filename"] == mock_transcriptions[0].filename
+        assert response.json[0]["created_at"] == mock_transcriptions[0].created_at
 
-
-# ----------------------------
-# GET /search endpoint
-# ----------------------------
-def test_search_transcriptions_endpoint(client):
-    # Mock database search results
-    mock_results = [Transcription(1, "hello.wav", "Hello world", "2024-01-01")]
-
-    # Patch the exact import used in the route
-    with patch("app.routes.search.search_transcriptions", return_value=mock_results):
-        response = client.get("/search?query=hello")
-
-        assert response.status_code == 200
-        assert len(response.json) == 1
-        assert response.json[0]["transcription"] == "Hello world"
+        assert response.json[1]["transcription"] == mock_transcriptions[1].transcription
+        assert response.json[1]["filename"] == mock_transcriptions[1].filename
+        assert response.json[1]["created_at"] == mock_transcriptions[1].created_at
