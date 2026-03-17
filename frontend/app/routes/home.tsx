@@ -30,11 +30,11 @@ type HealthStatus = "loading" | "ready" | "timeout";
 
 export default function Home() {
   const [health, setHealth] = useState<HealthStatus>("loading");
-  const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
   const [filtered, setFiltered] = useState<Transcription[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Poll server health
   useEffect(() => {
     let stopped = false;
     const start = Date.now();
@@ -66,6 +66,7 @@ export default function Home() {
     };
   }, []);
 
+  // Fetch initial transcriptions when server is ready
   useEffect(() => {
     if (health === "ready") fetchTranscriptions();
   }, [health]);
@@ -76,8 +77,7 @@ export default function Home() {
       const data = await fetch(`${BACKEND_URL}/transcriptions`).then((r) =>
         r.json(),
       );
-      setTranscriptions(data);
-      setFiltered(data);
+      setFiltered(data); // Only filtered state now
     } catch {
       setError("Failed to fetch transcriptions");
     } finally {
@@ -89,18 +89,19 @@ export default function Home() {
     await fetchTranscriptions();
   };
 
+  // Unified search handler: fetches filtered list or all if query empty
   const handleSearch = async (query: string) => {
-    if (!query.trim()) {
-      setFiltered(transcriptions);
-      return;
-    }
     try {
-      const data = await fetch(
-        `${BACKEND_URL}/search?query=${encodeURIComponent(query)}`,
-      ).then((r) => r.json());
+      setLoading(true);
+      const url = query.trim()
+        ? `${BACKEND_URL}/search?query=${encodeURIComponent(query)}`
+        : `${BACKEND_URL}/transcriptions`;
+      const data = await fetch(url).then((r) => r.json());
       setFiltered(data);
     } catch {
       setError("Search failed");
+    } finally {
+      setLoading(false);
     }
   };
 
