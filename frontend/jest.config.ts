@@ -1,7 +1,9 @@
-export default {
+import type { Config } from "jest";
+
+const config: Config = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  setupFilesAfterFramework: ["@testing-library/jest-dom"],
+  setupFilesAfterEnv: ["@testing-library/jest-dom"],
   moduleNameMapper: {
     "\\.(css|less)$": "<rootDir>/__mocks__/fileMock.ts",
     "import.meta.env": "<rootDir>/__mocks__/envMock.ts",
@@ -20,3 +22,5 @@ export default {
     ],
   },
 };
+
+export default config;

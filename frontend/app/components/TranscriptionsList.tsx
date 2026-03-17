@@ -28,7 +28,7 @@ const formatDate = (s: string) => {
 };
 
 const TranscriptionsList: React.FC<TranscriptionsListProps> = ({
-  transcriptions
+  transcriptions,
 }) => {
   const [toastKey, setToastKey] = useState(0);
 

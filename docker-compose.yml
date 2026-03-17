@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: transcription_backend
     ports:
-      - "5001:5001"
+      - "8000:8000"
     environment:
       DB_PATH: /app/database/db.sqlite3
     networks:
@@ -18,10 +18,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_BACKEND_URL: http://127.0.0.1:5001
+        VITE_BACKEND_URL: http://127.0.0.1:8000
     container_name: transcription_frontend
     ports:
-      - "3001:3001"
+      - "3000:3000"
     networks:
       - app-network
     depends_on:

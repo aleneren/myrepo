@@ -1,15 +1,18 @@
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FileUpload from "./FileUpload";
 
-const mockOnDrop = jest.fn();
+// This will store the onDrop callback internally
+let mockOnDrop: (files: File[]) => void;
+
 jest.mock("react-dropzone", () => ({
-  useDropzone: ({ onDrop }: { onDrop: (files: File[]) => void }) => {
-    mockOnDrop.mockImplementation(onDrop);
+  useDropzone: (props: { onDrop: (files: File[]) => void }) => {
+    // Capture the onDrop callback
+    mockOnDrop = props.onDrop;
     return {
-      getRootProps: () => ({}),
-      getInputProps: () => ({}),
+      getRootProps: () => ({ "data-testid": "dropzone" }),
+      getInputProps: () => ({ "data-testid": "input" }),
       isDragActive: false,
       fileRejections: [],
     };
@@ -34,17 +37,21 @@ describe("FileUpload", () => {
     const onUploadSuccess = jest.fn();
     render(<FileUpload onUploadSuccess={onUploadSuccess} />);
 
+    // Create a fake file
     const file = new File(["audio content"], "audio.mp3", {
       type: "audio/mpeg",
     });
-    await mockOnDrop([file]);
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/1 file transcribed successfully/i),
-      ).toBeInTheDocument();
+    await act(async () => {
+      await mockOnDrop([file]);
     });
 
+    // Wait for the success message (React async state updates)
+    expect(
+      await screen.findByText(/1 file transcribed successfully/i),
+    ).toBeInTheDocument();
+
+    // Ensure the callback was called
     expect(onUploadSuccess).toHaveBeenCalledTimes(1);
   });
 });
