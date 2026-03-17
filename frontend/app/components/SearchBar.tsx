@@ -13,13 +13,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') onSearch(query);
+    if (e.key === "Enter") onSearch(query);
   };
 
-const handleClear = () => {
-  setQuery('');
-  onSearch('');
-};
+  const handleClear = () => {
+    setQuery("");
+    onSearch("");
+  };
 
   return (
     <div className="search-bar">
@@ -42,6 +42,13 @@ const handleClear = () => {
             ✕
           </button>
         )}
+        <button
+          onClick={() => onSearch(query)}
+          className="search-submit-button"
+          aria-label="Search"
+        >
+          ↵
+        </button>
       </div>
       {query && (
         <small className="search-info">

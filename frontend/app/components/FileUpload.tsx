@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { BACKEND_URL } from "../const";
 import "./FileUpload.css";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const SUPPORTED_FORMATS = {
   "audio/mpeg": [".mp3", ".mpeg", ".mpga"],
@@ -36,6 +35,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
     setCompletedCount(null);
 
     try {
+      // Batch upload files to backend
       const formData = new FormData();
       files.forEach((f) => formData.append("file", f));
 

@@ -13,6 +13,10 @@ body {
   }
 }
 
+/* 
+  Hugging Face Gradient Background
+  Ref: https://share.google/7bJbWE6s8gTwprSzH
+ */
 .home-page {
   height: 100vh;
   display: flex;
@@ -56,7 +60,7 @@ body {
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  min-height: 0; /* prevents grid from overflowing flex parent */
+  min-height: 0;
 }
 
 .upload-section {
