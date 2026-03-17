@@ -40,28 +40,34 @@ A web app for transcribing audio files, built with a **React frontend** and **Fl
 - Docker (Desktop, Colima, etc.)
 - Docker Compose
 
-### Quick Start
+### 1. Environment
 
-Start both frontend and backend services:
+```bash
+cp frontend/sample.env frontend/.env
+cp backend/sample.env backend/.env
+```
+
+Fill in each `.env` with your actual values — refer to the sample files for required variables.
+
+### 2. Start
 
 ```bash
 docker-compose up --build
 ```
 
-Access:
+| Service  | URL                   |
+| -------- | --------------------- |
+| Frontend | http://localhost:3000 |
+| Backend  | http://localhost:8000 |
 
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8000
-
-### Development
+### Other Commands
 
 ```bash
-# Start services
-docker-compose up
-
-# Stop services
-docker-compose down
-
-# Rebuild after changes
-docker-compose up --build
+docker-compose up        # start without rebuilding
+docker-compose down      # stop and remove containers
+docker-compose up --build  # rebuild after changes
 ```
+
+---
+
+For frontend-only or backend-only local development, see the respective [`frontend/`](frontend/README.md) and [`backend/`](backend/README.md) READMEs.

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { BACKEND_URL } from "../const";
+import { BACKEND_URL, MAX_FILES, MAX_FILE_SIZE_MB } from "../const";
 import "./FileUpload.css";
 
 const SUPPORTED_FORMATS = {
@@ -9,8 +9,6 @@ const SUPPORTED_FORMATS = {
   "audio/wav": [".wav"],
   "audio/webm": [".webm"],
 };
-
-const MAX_FILES = 5;
 
 interface FileUploadProps {
   onUploadSuccess: () => void;
@@ -74,6 +72,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
       onDrop,
       accept: SUPPORTED_FORMATS,
       maxFiles: MAX_FILES,
+      maxSize: MAX_FILE_SIZE_MB * 1024 * 1024,
       disabled: isProcessing,
     });
 
@@ -109,8 +108,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
                 or <span className="browse-text">click to browse</span>
               </p>
               <p className="supported-formats">
-                MP3, MP4, MPEG, MPGA, M4A, WAV, WEBM &nbsp;·&nbsp; Max{" "}
-                {MAX_FILES} files
+                MP3, MP4, MPEG, MPGA, M4A, WAV, WEBM <br /> Max {MAX_FILES}{" "}
+                files with a max size of {MAX_FILE_SIZE_MB} MB each
               </p>
             </>
           )}

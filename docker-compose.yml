@@ -8,8 +8,8 @@ services:
     container_name: transcription_backend
     ports:
       - "8000:8000"
-    environment:
-      DB_PATH: /app/database/db.sqlite3
+    env_file:
+      - ./backend/.env
     networks:
       - app-network
 
@@ -17,11 +17,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_BACKEND_URL: http://127.0.0.1:8000
     container_name: transcription_frontend
     ports:
       - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - /app/node_modules
     networks:
       - app-network
     depends_on:

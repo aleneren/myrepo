@@ -12,11 +12,10 @@ React Router v7 app with TypeScript.
 
 ### Environment (`frontend/`)
 
-Create a `.env` file:
+Create a `.env` file in `frontend/` using [`sample.env`](sample.env) as reference:
 
-```env
-# Example: local Flask backend running at port 8000
-VITE_BACKEND_URL=http://localhost:8000
+```bash
+cp sample.env .env
 ```
 
 ### Setup
